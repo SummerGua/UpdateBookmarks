@@ -1,24 +1,39 @@
 let btn = document.getElementById("update-btn");
-let btn2 = document.getElementById("save");
-let text = document.getElementById("text");
+function getDomain(url){
+  return url.split('://')[1].split('/')[0];
+};
 btn.onclick = function() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
-    let url = tabs[0].url;
-    text.innerText = url
-    // use `url` here inside the callback because it's asynchronous!
+    let currentUrl = "";
+    let realUrl = "";
+    let title = "";
+    if(tabs[0]?.url){
+      realUrl = tabs[0].url
+      currentUrl = getDomain(tabs[0].url);
+      title = tabs[0].title;
+      chrome.bookmarks.getChildren("1", (children) => { // 在书签中找到与当前tab域名相同的网址
+        let bookmarks = new Map();
+        children.forEach( item => {
+          bookmarks.set(getDomain(item.url), item);
+        })
+        if(bookmarks.has(currentUrl)) {
+          const tipResult = window.prompt("您确定要更新名为" + bookmarks.get(currentUrl).title + "的书签吗(可更改名称)", title);
+          if(tipResult) {
+            chrome.bookmarks.update(bookmarks.get(currentUrl).id, {"title": title, "url": realUrl});
+          }
+        }else{
+          const tipResult = window.prompt("书签栏中还没有“"+ title +"”，是否添加？(点击确认使用默认名称)", title);
+          if(tipResult) {
+            chrome.bookmarks.create({
+              "parentId": "1",
+              "title": title,
+              "url": realUrl
+            })
+          }
+        }
+      })
+    }else{
+      console.log("当前url未定义");
+    }
   });
 };
-btn2.onclick = function() {
-  chrome.bookmarks.create({
-    'parentId': '1',
-    'title': 'mi',
-    'url': 'https://www.mi.com'
-  })
-  
-};
-const options = {
-  title: 'demo',
-  visible: true,
-  onclick:function(){alert('您点击了右键菜单！')}
-}
-chrome.contextMenus.create(options)
