@@ -1,12 +1,12 @@
 {
   "name": "Update Bookmark",
   "description": "An extension",
-  "version": "1.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "permissions": ["bookmarks", "storage","tabs","contextMenus"],
 
   "background": {
-    "service_worker": "update.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {

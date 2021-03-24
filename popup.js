@@ -19,14 +19,18 @@ btn.onclick = function() {
         if(bookmarks.has(currentUrl)) {
           const tipResult = window.prompt("您确定要更新名为" + bookmarks.get(currentUrl).title + "的书签吗(可更改名称)", title);
           if(tipResult) {
-            chrome.bookmarks.update(bookmarks.get(currentUrl).id, {"title": title, "url": realUrl});
+            chrome.bookmarks.update(
+              bookmarks.get(currentUrl).id, 
+              {
+                "title": tipResult, "url": realUrl
+              });
           }
         }else{
           const tipResult = window.prompt("书签栏中还没有“"+ title +"”，是否添加？(点击确认使用默认名称)", title);
           if(tipResult) {
             chrome.bookmarks.create({
               "parentId": "1",
-              "title": title,
+              "title": tipResult,
               "url": realUrl
             })
           }
